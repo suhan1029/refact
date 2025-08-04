@@ -1,2 +1,2 @@
 # refact
-code for refact
+리팩터링 코드를 기록해놓기 위한 공간입니다.
