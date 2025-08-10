@@ -1,14 +1,22 @@
-// 리팩터링 첫번째 예시 중 10: 두 단계 사이의 중간 데이터 구조 역할을 할 객체를 만들어서 renderPlainText()에 인수로 전달
+// 리팩터링 첫번째 예시 중 11: invoice와 plays를 통해 전달되는 데이터를 중간 데이터 구조로 옮겨서 계산 관련 코드를 전부 statement() 함수로 모으고 renderPlainText()는 data 매개변수로 전달된 데이터만 처리하게 만들기
+// 연극 제목도 중간 데이터 구조에서 가져오기(연극 정보를 담을 자리를 마련하기)
 
+// 함수로 건넨 데이터를 수정하지 않기 위해 공연 객체를 복사
+// 가변 데이터는 금방 상하기 때문에 데이터를 최대한 불변처럼 취급하기
 function statement(invoice, plays) {
-    const statementData = {}; // 중간 데이터 구조 역할을 할 객체
-    return renderPlainText(statementData, invoice, plays);
-                           // 중간 데이터 구조를 인수로 전달
+    const statementData = {}; 
+    statementData.customer = invoice.customer;          
+    statementData.performances = invoice.performances.map(enrichPerformance); // 공연 객체 복사
+    return renderPlainText(statementData, plays);
+
+    function enrichPerformance(aPerformance) {
+        const result = Object.assign({}, aPerformance); // 얕은 복사 수행
+        return result;
+    }
 }
 
-                         // 중간 데이터 구조를 인수로 전달
-function renderPlainText(data, invoice, plays) {
-    let result = `청구 내역 (고객명: ${invoice.customer})\n`;
+function renderPlainText(data, plays) {
+    let result = `청구 내역 (고객명: ${data.customer})\n`;
 
     for (let perf of invoice.performances) {
         result += ` ${playFor(perf).name}: ${usd(amountFor(perf)/100)} (${perf.audience}석)\n`;
@@ -24,7 +32,7 @@ function renderPlainText(data, invoice, plays) {
 
 function totalAmount() {
     let result = 0;
-    for (let perf of invoice.performances) {
+    for (let perf of data.performances) {
         result += amountFor(perf);
     }
     return result;
@@ -32,7 +40,7 @@ function totalAmount() {
 
 function totalVolumeCredits() {
     let result = 0;
-    for (let perf of invoice.performances) {
+    for (let perf of data.performances) {
         result += volumeCreditsFor(perf);
     }
     return result;
