@@ -12,7 +12,7 @@ function renderPlainText(data, /*invoice,*/ plays) {  // 3. 필요 없어진 inv
     let result = `청구 내역 (고객명: ${data.customer})\n`;  // 2. 고객 데이터를 invoice 원본 데이터가 아닌 중간 데이터로부터 얻기
 
     for (let perf of invoice.performances) {
-        result += ` ${playFor(perf).name}: ${usd(amountFor(perf)/100)} (${perf.audience}석)\n`;
+        result += ` ${playFor(perf).name}: ${usd(amountFor(perf))} (${perf.audience}석)\n`;
     }
     
     // 결과값 계산
@@ -92,7 +92,7 @@ const fs = require('fs');
 
 // JSON 파일 불러오기
 const invoiceData = JSON.parse(fs.readFileSync('invoices.json', 'utf8'));
-const invoice = invoiceData[0]; // 첫 번째 요소 선택
+// const invoice = invoiceData[0]; // 첫 번째 요소 선택
 const plays = JSON.parse(fs.readFileSync('plays.json', 'utf8'));
 
 // statement 함수 실행 후 결과 출력

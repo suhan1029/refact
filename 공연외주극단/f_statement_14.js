@@ -24,7 +24,7 @@ function renderPlainText(data, plays) {
     let result = `청구 내역 (고객명: ${data.customer})\n`;
 
     for (let perf of data.performances) {
-        result += ` ${perf.play.name}: ${usd(amountFor(perf)/100)} (${perf.audience}석)\n`;
+        result += ` ${perf.play.name}: ${usd(amountFor(perf))} (${perf.audience}석)\n`;
     }                 // 3. 중간 데이터를 사용하도록 바꾸기
     
     // 결과값 계산

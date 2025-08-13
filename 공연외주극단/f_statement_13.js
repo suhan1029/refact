@@ -5,40 +5,53 @@
 // 가변 데이터는 금방 상하기 때문에 데이터를 최대한 불변처럼 취급하기
 function statement(invoice, plays) {
     const statementData = {}; 
-    statementData.customer = invoice.customer;          
-    statementData.performances = invoice.performances.map(enrichPerformance); // 공연 객체 복사
+    statementData.customer = invoice.customer;    
+    
+    console.log(invoice.performances);
+    statementData.performances = invoice.performances.map(enrichPerformance);
+    // 기존과 똑같은 내용의 새로운 배열 생성, 원본 배열(invoice.performances)은 변경되지 않음, 불변성 유지
+    
     return renderPlainText(statementData, plays);
 
     function enrichPerformance(aPerformance) {
-        const result = Object.assign({}, aPerformance); // 얕은 복사 수행
+        console.log(aPerformance);
+        console.log(' ');
+        const result = Object.assign({}, aPerformance);
+        // aPerformance의 속성을 그대로 복사한 새 객체 생성 (얕은 복사 수행), 원본을 보존하기 위해 복사된 속성을 받을 객체를 빈 객체로 설정, 이 객체가 함수의 반환값이 됨.
+
+        console.log('\n' + result);
         return result;
     }
+    // 기존과 똑같은 내용이 있는 새로운 배열을 만들고 그것을 사용하기 때문에 원본 데이터는 안전함
+    // statementData.performances = invoice.performances; 만약 이렇게 하고 statementData.performances를 가공하면 invoice.performances도 바뀌어버려서 에러가 명확하지 않은 오류가 발생함
+
+    // object.assign({}, aPerformance)로 invoice.performances의 각 원소를 얕은 복사해서 statementData.performances에 담으므로 이후 가공해도 원본 배열과 원소가 바뀌지 않음
 }
 
 function renderPlainText(data, plays) {
     let result = `청구 내역 (고객명: ${data.customer})\n`;
 
-    for (let perf of invoice.performances) {
-        result += ` ${playFor(perf).name}: ${usd(amountFor(perf)/100)} (${perf.audience}석)\n`;
+    for (let perf of data.performances) {
+        result += ` ${playFor(perf).name}: ${usd(amountFor(perf))} (${perf.audience}석)\n`;
     }
     
     // 결과값 계산
-    result += `총액: ${usd(totalAmount())}\n`;
-    result += `적립 포인트: ${totalVolumeCredits()}점\n`;
+    result += `총액: ${usd(totalAmount(data))}\n`;
+    result += `적립 포인트: ${totalVolumeCredits(data)}점\n`;
     return result;
 }
 
 
 
-function totalAmount() {
+function totalAmount(data) {
     let result = 0;
-    for (let perf of data.performances) {
+    for (let perf of data.performances ) {
         result += amountFor(perf);
     }
     return result;
 }
 
-function totalVolumeCredits() {
+function totalVolumeCredits(data) {
     let result = 0;
     for (let perf of data.performances) {
         result += volumeCreditsFor(perf);
